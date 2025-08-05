@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Un Pequeño Regalo para Ti</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f3e5f5;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .gift-container {
+            cursor: pointer;
+            width: 200px;
+            height: 200px;
+            position: relative;
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            z-index: 10;
+        }
+
+        .gift-box {
+            width: 100%;
+            height: 100%;
+            background-color: #673ab7;
+            border-radius: 15px;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .gift-box::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background-color: #bbdefb;
+            transform: translateY(-50%);
+        }
+
+        .gift-box::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 40px;
+            height: 100%;
+            background-color: #bbdefb;
+            transform: translateX(-50%);
+        }
+
+        .bow {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            background-color: #bbdefb;
+            border-radius: 50%;
+            z-index: 11;
+        }
+
+        .bow::before, .bow::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background-color: #bbdefb;
+            border-radius: 50%;
+        }
+
+        .bow::before {
+            top: -20px;
+            left: -20px;
+            transform: rotate(45deg);
+        }
+        .bow::after {
+            top: -20px;
+            right: -20px;
+            transform: rotate(-45deg);
+        }
+
+        .gift-container.open {
+            transform: scale(0);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .message {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 2.5em;
+            color: #4527a0;
+            text-shadow: 2px 2px 0 #1a237e, 4px 4px 0 #1a237e;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 1s ease-in-out;
+            max-width: 90%;
+            z-index: 5;
+            position: absolute;
+            line-height: 1.2;
+            padding: 20px;
+            background-image: url('https://www.transparenttextures.com/patterns/graffiti.png');
+            background-size: 50px;
+        }
+
+        .message.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .button {
+            background-color: #673ab7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Permanent Marker', cursive;
+            font-size: 1.5em;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, opacity 0.5s ease;
+            margin-top: 20px;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 6;
+            text-shadow: 2px 2px 0 #4527a0;
+        }
+
+        .button:hover {
+            transform: scale(1.1);
+        }
+
+        .button.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        #never-button {
+            font-size: 1em;
+            padding: 6px 12px;
+            margin-top: 10px;
+        }
+
+        .graffiti-text {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 2.5em;
+            color: #4caf50;
+            text-shadow: 2px 2px 0 #1b5e20, 4px 4px 0 #1b5e20;
+            max-width: 90%;
+            line-height: 1.2;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 1s ease-in-out;
+            position: absolute;
+            z-index: 7;
+            padding: 20px;
+            background-image: url('https://www.transparenttextures.com/patterns/graffiti.png');
+            background-size: 50px;
+        }
+
+        .graffiti-text.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .cloud-animation-container {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+        
+        .cloud-and-trail-container {
+            position: absolute;
+            top: 25%;
+            left: -200px;
+            animation: moveCloudAndTrail 15s linear infinite alternate;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+        }
+        
+        .cloud {
+            width: 200px;
+            height: 80px;
+            background: #fff;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .cloud::before, .cloud::after {
+            content: '';
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+        }
+
+        .cloud::before {
+            width: 100px;
+            height: 100px;
+            top: -50px;
+            left: 40px;
+        }
+
+        .cloud::after {
+            width: 70px;
+            height: 70px;
+            top: -35px;
+            left: 120px;
+        }
+
+        .cloud-trail {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 3em;
+            color: #4527a0;
+            margin-left: 20px;
+            white-space: nowrap;
+            text-shadow: 2px 2px 0 #1a237e, 4px 4px 0 #1a237e;
+        }
+
+        #bye-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: transparent;
+            color: #4527a0;
+            border: 2px solid #4527a0;
+            padding: 10px 20px;
+            font-family: 'Permanent Marker', cursive;
+            font-size: 1.5em;
+            border-radius: 5px;
+            cursor: pointer;
+            transform: rotate(-5deg) skewX(-10deg);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease, transform 0.5s ease;
+            z-index: 30;
+        }
+
+        #bye-button.show {
+            opacity: 0.3;
+            pointer-events: all;
+        }
+
+        @keyframes moveCloudAndTrail {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(calc(100vw - 200px)); }
+        }
+
+        @keyframes dropHeart {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(100vh) scale(0); opacity: 0; }
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 2em;
+            color: #f44336;
+            animation: dropHeart 5s linear forwards;
+            z-index: 15;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="main-container">
+        <div class="gift-container" onclick="openGift()">
+            <div class="gift-box"></div>
+            <div class="bow"></div>
+        </div>
+
+        <div id="first-message" class="message">
+            ✨ Eres increíble, nunca lo olvides. ✨<br>
+            💖 Siempre estaré aquí para ti, nunca me olvides. 💖<br>
+            Att: J
+        </div>
+
+        <button id="love-button" class="button" onclick="showGraffitiMessage()">Me quieres</button>
+
+        <div id="graffiti-message" class="graffiti-text">
+            💙 Tu niño siempre te va a querer pase lo que pase. 💙<br>
+            💫 Si el mundo se acaba, siempre tendrás un pedazo de su corazón. 💫
+            <button id="never-button" class="button" onclick="startCloudAnimation()">Siempre</button>
+        </div>
+
+        <div id="cloud-animation-container" class="cloud-animation-container">
+            <div id="cloud-and-trail" class="cloud-and-trail-container">
+                <div id="cloud" class="cloud"></div>
+                <div id="cloud-trail-text" class="cloud-trail">Nunca te rindas</div>
+            </div>
+        </div>
+    </div>
+    
+    <button id="bye-button" onclick="exitPage()">Bye</button>
+
+    <script>
+        let heartInterval;
+
+        function openGift() {
+            const giftContainer = document.querySelector('.gift-container');
+            const firstMessage = document.getElementById('first-message');
+            const loveButton = document.getElementById('love-button');
+            
+            if (!giftContainer.classList.contains('open')) {
+                giftContainer.classList.add('open');
+                
+                setTimeout(() => {
+                    firstMessage.classList.add('show');
+                }, 500); 
+
+                setTimeout(() => {
+                    loveButton.classList.add('show');
+                }, 1500);
+            }
+        }
+
+        function showGraffitiMessage() {
+            const firstMessage = document.getElementById('first-message');
+            const loveButton = document.getElementById('love-button');
+            const graffitiMessage = document.getElementById('graffiti-message');
+            const neverButton = document.getElementById('never-button');
+            
+            firstMessage.classList.remove('show');
+            loveButton.classList.remove('show');
+            
+            setTimeout(() => {
+                graffitiMessage.classList.add('show');
+                neverButton.classList.add('show');
+            }, 500);
+        }
+
+        function startCloudAnimation() {
+            const graffitiMessage = document.getElementById('graffiti-message');
+            const neverButton = document.getElementById('never-button');
+            const cloudContainer = document.getElementById('cloud-animation-container');
+            const cloudAndTrail = document.getElementById('cloud-and-trail');
+            const cloud = document.getElementById('cloud');
+            const byeButton = document.getElementById('bye-button');
+
+            graffitiMessage.classList.remove('show');
+            neverButton.classList.remove('show');
+            
+            // Muestra el botón de "Bye" de forma sutil
+            setTimeout(() => {
+                byeButton.classList.add('show');
+            }, 1000);
+
+            setTimeout(() => {
+                cloudContainer.style.opacity = 1;
+                cloudAndTrail.style.animationPlayState = 'running';
+                
+                let lastHeartLeft = 0;
+                heartInterval = setInterval(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart';
+                    heart.innerHTML = '❤️';
+                    
+                    const cloudRect = cloud.getBoundingClientRect();
+                    const currentCloudLeft = cloudRect.left + (cloudRect.width / 2);
+
+                    if (Math.abs(currentCloudLeft - lastHeartLeft) > 50) {
+                        heart.style.left = `${currentCloudLeft}px`;
+                        heart.style.top = `${cloudRect.top + cloudRect.height}px`;
+                        cloudContainer.appendChild(heart);
+                        lastHeartLeft = currentCloudLeft;
+                    }
+                }, 200);
+            }, 500);
+        }
+
+        function exitPage() {
+            alert("¡Bye Bye! ¡Te quiero Fernanda!");
+            window.location.href = "about:blank";
+        }
+    </script>
+</body>
+</html>
